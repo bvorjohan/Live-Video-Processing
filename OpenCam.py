@@ -182,26 +182,24 @@ while True:
     )
 
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame,(x,y+int(h*.6)),(x+w,y+h),(255,0,0),2)
-        roi_gray_lips = gray[y+int(h*.5):y+h, x:x+w]
+        # cv2.rectangle(frame,(x,y+int(h*.6)),(x+w,y+h),(255,0,0),2)
+        roi_gray_lips = gray[y+int(h*.6):y+h, x:x+w]
+        roi_color_lips = frame[y+int(h*.6):y+h, x:x+w]
 
         if(lips):
             mouths=mouth_cascade.detectMultiScale(roi_gray_lips,1.3,5)
 
 
-            if(True):
-            # for mouth in mouths:
-            # if(len(mouths)==1):
-                # mouth=mouths[0]
-                # lx=mouth[0]
-                # ly=mouth[1]
-                # lw=mouth[2]
-                # lh=mouth[3]
-                # cv2.putText()
-                cv2.rectangle(roi_gray_lips,(0,0),(w,h),(255,0,0),2)
-                # roi = frame[y:y+h,x:x+w]
-                # roi = cv2.flip(roi,0)
-                frame[y+int(h*.5):y+h, x:x+w] = roi_gray_lips
+            for (lx, ly, lw, lh) in mouths:
+                rx0 = x+lx-20
+                rx1 = x+lx+lw+20
+                ry0 = y+int(h*.6)+ly
+                ry1 = y+int(h*.6)+ly+lh
+                # cv2.rectangle(frame,(rx0,ry0),(rx1,ry1),(0,255,0),2)
+                lip_area = frame[ry0:ry1, rx0:rx1]
+                lip_area = cv2.flip(lip_area,0)
+                lip_area = cv2.flip(lip_area,1)
+                frame[ry0:ry1, rx0:rx1] = lip_area
 
 
 
