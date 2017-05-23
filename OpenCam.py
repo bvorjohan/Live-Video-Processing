@@ -5,6 +5,7 @@ import math
 # Haar Cascade loaders
 eye_cascade = cv2.CascadeClassifier("haarcascade_eye.xml")
 mouth_cascade = cv2.CascadeClassifier("haarcascade_mouth.xml")
+face_cascade = cv2.CascadeClassifier("haarcascade_face.xml")
 
 # Image loaders
 glasses01=cv2.imread("glasses01.png",0)
@@ -59,8 +60,8 @@ cols=1
 
 # Booleans indicating what is to be operated
 eyebrows=False
-aviators=True
-mouth=False
+aviators=False
+lips=True
 
 # Opens webcam object (specific to machine)
 cap = cv2.VideoCapture(0)
@@ -95,10 +96,10 @@ while True:
     _, frame = cap.read()
     frame=cv2.flip(frame,1)
     roi_color=frame
-
+    gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
 
     if(eyebrows):
-        gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+
         eyes=eye_cascade.detectMultiScale(gray,1.3,5)
 
 
@@ -117,7 +118,6 @@ while True:
 
 
     if(aviators):
-        gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
         eyes=eye_cascade.detectMultiScale(gray,1.3,5)
 
 
@@ -173,9 +173,38 @@ while True:
         # place the joined image, saved to dst back over the original image
         roi_color[y1:y2, x1:x2] = dst
 
-        if(mouth):
-            gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-            mouth=mouth_cascade.detectMultiScale(gray,1.3,5)
+
+    faces = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30)
+    )
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame,(x,y+int(h*.6)),(x+w,y+h),(255,0,0),2)
+        roi_gray_lips = gray[y+int(h*.5):y+h, x:x+w]
+
+        if(lips):
+            mouths=mouth_cascade.detectMultiScale(roi_gray_lips,1.3,5)
+
+
+            if(True):
+            # for mouth in mouths:
+            # if(len(mouths)==1):
+                # mouth=mouths[0]
+                # lx=mouth[0]
+                # ly=mouth[1]
+                # lw=mouth[2]
+                # lh=mouth[3]
+                # cv2.putText()
+                cv2.rectangle(roi_gray_lips,(0,0),(w,h),(255,0,0),2)
+                # roi = frame[y:y+h,x:x+w]
+                # roi = cv2.flip(roi,0)
+                frame[y+int(h*.5):y+h, x:x+w] = roi_gray_lips
+
+
+
 
 
 
