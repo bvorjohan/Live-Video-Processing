@@ -88,6 +88,15 @@ def trackEyes(eyes):
 
     return (e0,e1,th,dist,midx,midy)
 
+def rotate():
+    i = 0
+    while True:
+        yield i
+        i = (i+2)%256
+
+
+rotator = rotate()
+colorOffset = 0
 
 '''
 Main program structure loop
@@ -199,7 +208,19 @@ while True:
                 lip_area = frame[ry0:ry1, rx0:rx1]
                 lip_area = cv2.flip(lip_area,0)
                 lip_area = cv2.flip(lip_area,1)
+                lip_area = cv2.cvtColor(lip_area,cv2.COLOR_BGR2HSV)
+                colorOffset = next(rotator)
+                # print (colorOffset)
+                for tx in range(rx1-rx0-1):
+                    for ty in range(ry1-ry0-1):
+                        lip_area[ty,tx][0] += colorOffset
+
+                lip_area = cv2.cvtColor(lip_area,cv2.COLOR_HSV2BGR)
+
+
                 frame[ry0:ry1, rx0:rx1] = lip_area
+
+
 
 
 
